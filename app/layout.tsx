@@ -32,8 +32,8 @@ export default async function RootLayout({
             >
                 <SidebarProvider>
                     <AppSidebar />
-                    <main className="flex p-10 items-center  size-full h-lvh ">
-                        <SidebarTrigger className="self-start" />
+                    <SidebarTrigger className="self-start" />
+                    <main className="flex p-10 size-full h-lvh ">
                         {children}
                     </main>
                 </SidebarProvider>
