@@ -1,50 +1,90 @@
 "use client";
 import { createClient } from "@/lib/supabase";
-import { useEffect } from "react";
+import React, { useState, useRef } from "react";
+import Papa from "papaparse";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+
+// Define type for competitor data
+type CompetitorData = {
+    name: string;
+    last_name: string;
+    sex: string;
+};
 
 export default function Competitors() {
     const supabase = createClient();
-    const handleAddCompetitor = async () => {
-        const serp = await supabase.from("competitors").insert([
-            {
-                name: "John1",
-                last_name: "Doe1",
-                sex: "chłopak",
-            },
-        ]);
-        console.log(serp);
+    const [uploading, setUploading] = useState<boolean>(false);
+    const inputRef = useRef<HTMLInputElement | null>(null);
+    const { toast } = useToast();
+
+    const handleAddCompetitor = async (data: CompetitorData[]) => {
+        const formattedData = data
+            .filter((e) => e.name)
+            .map((d) => ({
+                name: d.name,
+                last_name: d.last_name,
+                sex: d.sex,
+            }));
+
+        const { error, status } = await supabase
+            .from("competitors")
+            .insert(formattedData);
+
+        if (error) {
+            console.error(error);
+            toast({
+                title: "Błąd podczas dodawania zawodników",
+                variant: "destructive",
+            });
+        } else if (status === 201) {
+            toast({
+                title: `Wygenerowano ${formattedData.length} zawodników`,
+                variant: "default",
+            });
+        }
+
+        setUploading(false);
     };
 
-    useEffect(() => {
-        handleAddCompetitor();
+    const handleUploadCSV = () => {
+        setUploading(true);
+        if (inputRef.current) {
+            const reader = new FileReader();
+            const [file] = inputRef.current.files || [];
 
-        // const s = supabase
-        //     .channel("channel_competitors")
-        //     .on(
-        //         "postgres_changes",
-        //         {
-        //             event: "*",
-        //             schema: "public",
-        //             table: "competitors",
-        //         },
-        //         (payload) => {
-        //             console.log("Change received!", payload);
-        //         }
-        //     )
-        //     .subscribe();
+            if (file) {
+                reader.onloadend = (event: ProgressEvent<FileReader>) => {
+                    const csv = Papa.parse<CompetitorData>(
+                        event.target?.result as string,
+                        { header: true }
+                    );
+                    handleAddCompetitor(csv.data);
+                };
 
-        // return () => {
-        //     s.unsubscribe();
-        // };
-    }, []);
+                reader.readAsText(file);
+            } else {
+                setUploading(false);
+            }
+        }
+    };
 
     return (
         <div>
             <div className="grid w-full max-w-sm items-center gap-1.5">
                 <Label htmlFor="picture">CSV z zawodnikami</Label>
-                <Input id="picture" type="file" />
+                <Input
+                    ref={inputRef}
+                    disabled={uploading}
+                    id="picture"
+                    type="file"
+                    accept=".csv"
+                />
+                <Button onClick={handleUploadCSV} disabled={uploading}>
+                    {uploading ? "Przesyłanie..." : "Prześlij"}
+                </Button>
             </div>
         </div>
     );
