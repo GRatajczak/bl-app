@@ -15,29 +15,7 @@ export default function Login() {
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
-    // const supabase = createClient();
     const { toast } = useToast();
-
-    // useEffect(() => {
-    //     const s = supabase
-    //         .channel("channel_judges")
-    //         .on(
-    //             "postgres_changes",
-    //             {
-    //                 event: "*",
-    //                 schema: "public",
-    //                 table: "judges",
-    //             },
-    //             (payload) => {
-    //                 console.log("Change received!", payload);
-    //             }
-    //         )
-    //         .subscribe();
-
-    //     return () => {
-    //         s.unsubscribe();
-    //     };
-    // }, []);
 
     const handleLogin = async (e: React.SyntheticEvent) => {
         e.preventDefault();
@@ -51,8 +29,15 @@ export default function Login() {
                 .eq("password", password)
                 .single();
 
-            console.log(data);
-            if (error) {
+            const {
+                data: { user },
+                error: userError,
+            } = await supabase.auth.signInWithPassword({
+                email: login,
+                password,
+            });
+
+            if (error && userError) {
                 toast({
                     title: "Błędne dane logowania!",
                     variant: "destructive",
@@ -63,13 +48,18 @@ export default function Login() {
             if (data) {
                 Cookies.set(
                     "supabase.auth.token",
-                    `id: ${data.id}; type: judge`,
+                    `id: ${data.id}; name: ${data.name} ;type: judge`,
                     { expires: 1 }
                 );
                 router.push(`/judge/${data.id}`);
-                toast({
-                    title: "Zalogowano!",
-                });
+            }
+            if (user) {
+                Cookies.set(
+                    "supabase.auth.token",
+                    `id: ${user.id}; name: ${user.email} ;type: admin`,
+                    { expires: 1 }
+                );
+                router.push(`/admin`);
             }
         } catch (error) {
             toast({
@@ -101,7 +91,9 @@ export default function Login() {
                 type="password"
                 onChange={(e) => setPassword(e.target.value)}
             />
-            <Button type="submit">{loading ? <Loader /> : "Zaloguj"}</Button>
+            <Button type="submit" disabled={loading}>
+                {loading ? <Loader /> : "Zaloguj"}
+            </Button>
         </form>
     );
 }

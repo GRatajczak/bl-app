@@ -11,7 +11,9 @@ export async function middleware(request: NextRequest) {
     if (url.pathname === "/login") return NextResponse.next();
 
     if (response.status === 401 && url.pathname !== "/login")
-        NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/login`);
+        return NextResponse.redirect(
+            `${process.env.NEXT_PUBLIC_SITE_URL}/login`
+        );
 
     return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/login`);
 }
