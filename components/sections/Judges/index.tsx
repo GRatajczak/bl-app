@@ -119,7 +119,7 @@ export default function JudgesPage() {
                 </Button>
             </div>
             <div className="container mx-auto py-10 size-full w-full">
-                <div className="flex gap-10">
+                <div className="flex gap-10 pb-2">
                     <div>
                         <Button
                             variant="destructive"
