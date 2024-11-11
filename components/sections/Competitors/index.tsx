@@ -197,7 +197,7 @@ export default function Competitors() {
                     {uploading ? "Przesyłanie..." : "Prześlij"}
                 </Button>
             </div>
-            <Dialog open={open}>
+            <Dialog open={open} onOpenChange={setOpen}>
                 <div className="container mx-auto py-10 size-full w-full">
                     <div className="flex gap-10">
                         <div className="flex gap-2 pb-2">
