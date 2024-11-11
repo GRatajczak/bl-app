@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { createClient } from "@/lib/supabase";
 import {
@@ -39,6 +40,7 @@ export default function Competitors() {
     const [select, setSelect] = useState<string[]>([]);
     const [judges, setJudges] = useState<Judges[]>([]);
     const [open, setOpen] = useState<boolean>(false);
+    const [table, setTable] = useState<any>();
     const handleFetchJudges = async () => {
         const { data, error } = await supabase.from("judges").select("*");
         if (error) {
@@ -210,6 +212,7 @@ export default function Competitors() {
                             <DeleteBulkModal
                                 select={select}
                                 setSelect={setSelect}
+                                table={table}
                                 handleFetchCompetitors={handleFetchCompetitors}
                             />
                         </div>
@@ -219,6 +222,7 @@ export default function Competitors() {
                         data={competitors}
                         setSort={setSortCompetitors}
                         setSelect={setSelect}
+                        getTable={setTable}
                     />
                 </div>
                 <DialogContent className="sm:max-w-[425px]">
@@ -258,6 +262,7 @@ export default function Competitors() {
                             onClick={() => {
                                 handleAddCompetitorToJudge(judgeId);
                                 setOpen(true);
+                                table?.toggleAllPageRowsSelected(false);
                             }}
                         >
                             Zapisz

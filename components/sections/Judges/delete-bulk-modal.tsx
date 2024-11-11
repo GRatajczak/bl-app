@@ -15,10 +15,13 @@ export default function DeleteBulkModal({
     selectJugdes,
     setSelectJudges,
     handleFetchJudges,
+    table,
 }: {
     selectJugdes: string[];
     setSelectJudges: (value: string[]) => void;
     handleFetchJudges: () => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    table?: any;
 }) {
     const supabase = createClient();
     const [open, setOpen] = useState<boolean>(false);
@@ -33,6 +36,8 @@ export default function DeleteBulkModal({
         if (status === 204) {
             handleFetchJudges();
             setSelectJudges([]);
+            table?.toggleAllPageRowsSelected(false);
+            setOpen(false);
             toast({
                 title: `Usunięto ${selectJugdes.length} sędziów`,
             });

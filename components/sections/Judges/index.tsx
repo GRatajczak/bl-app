@@ -15,6 +15,8 @@ export default function JudgesPage() {
     const [selectJugdes, setSelectJudges] = useState<string[]>([]);
     const [numberOfJudges, setNumberOfJudges] = useState<number>(0);
     const { toast } = useToast();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [table, setTable] = useState<any>();
 
     const handleGenerateJudges = async () => {
         const { error, status } = await supabase.from("judges").insert(
@@ -101,6 +103,7 @@ export default function JudgesPage() {
                         selectJugdes={selectJugdes}
                         setSelectJudges={setSelectJudges}
                         handleFetchJudges={handleFetchJudges}
+                        table={table}
                     />
                 </div>
 
@@ -108,6 +111,7 @@ export default function JudgesPage() {
                     columns={columns}
                     data={judges}
                     setSelect={setSelectJudges}
+                    getTable={setTable}
                 />
             </div>
         </div>

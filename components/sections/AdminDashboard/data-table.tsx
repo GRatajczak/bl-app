@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import {
     ColumnDef,
@@ -25,6 +26,7 @@ interface DataTableProps<TData, TValue> {
     setSelect?: (selected: string[]) => void;
     columnVisibility?: VisibilityState;
     hideColumns?: string[];
+    getTable?: any;
 }
 
 export function DataTable<TData, TValue>({
@@ -33,6 +35,7 @@ export function DataTable<TData, TValue>({
     setSort,
     setSelect,
     hideColumns,
+    getTable,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -40,6 +43,7 @@ export function DataTable<TData, TValue>({
         {}
     );
     const [rowSelection, setRowSelection] = useState({});
+    console.log(rowSelection);
 
     const table = useReactTable({
         data,
@@ -81,6 +85,10 @@ export function DataTable<TData, TValue>({
     const removeNumberPrefix = (input: string) => {
         return input.replace(/^\d+_/, "");
     };
+
+    useEffect(() => {
+        if (getTable) getTable(table);
+    }, [table]);
 
     return (
         <div className="rounded-md border">

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -15,10 +16,12 @@ export default function DeleteBulkModal({
     select,
     setSelect,
     handleFetchCompetitors,
+    table,
 }: {
     select: string[];
     setSelect: (value: string[]) => void;
     handleFetchCompetitors: () => void;
+    table?: any;
 }) {
     const supabase = createClient();
     const [open, setOpen] = useState<boolean>(false);
@@ -37,6 +40,7 @@ export default function DeleteBulkModal({
             toast({
                 title: `Usunięto ${select.length} zawodników`,
             });
+            table?.toggleAllPageRowsSelected(false);
         }
         if (error) {
             toast({
