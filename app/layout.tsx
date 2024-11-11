@@ -33,9 +33,7 @@ export default async function RootLayout({
                 <SidebarProvider>
                     <AppSidebar />
                     <SidebarTrigger className="self-start" />
-                    <main className="flex p-10 size-full h-lvh ">
-                        {children}
-                    </main>
+                    <main className="flex p-10 size-full">{children}</main>
                 </SidebarProvider>
                 <Toaster />
             </body>

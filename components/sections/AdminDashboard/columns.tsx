@@ -1,7 +1,7 @@
 "use client";
 import { createClient } from "@/lib/supabase";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -11,6 +11,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export type Judges = {
     id: string;
@@ -18,13 +19,42 @@ export type Judges = {
 };
 
 export type CompetitorData = {
+    number: number;
     id: string;
     name: string;
     last_name: string;
     sex: string;
+    number_of_tries: number;
+    points: number;
 };
 
 export const columns: ColumnDef<Judges>[] = [
+    {
+        id: "select",
+        header: ({ table }) => (
+            <Checkbox
+                checked={
+                    table.getIsAllPageRowsSelected() ||
+                    (table.getIsSomePageRowsSelected() && "indeterminate")
+                }
+                onCheckedChange={(value) => {
+                    table.toggleAllPageRowsSelected(!!value);
+                }}
+                aria-label="Select all"
+            />
+        ),
+        cell: ({ row }) => (
+            <Checkbox
+                checked={row.getIsSelected()}
+                onCheckedChange={(value) => {
+                    row.toggleSelected(!!value);
+                }}
+                aria-label="Select row"
+            />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+    },
     {
         accessorKey: "name",
         header: "Name",
@@ -35,18 +65,16 @@ export const columns: ColumnDef<Judges>[] = [
             const supabase = createClient();
             const judge = row.original;
             const handleDeleteJudge = async () => {
-                const { data } = await supabase
-                    .from("judges")
-                    .delete()
-                    .eq("id", judge.id);
-                console.log(data);
+                await supabase.from("judges").delete().eq("id", judge.id);
             };
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
                             <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
+                            <div className="text-right font-medium">
+                                <MoreHorizontal className="h-4 w-4 text-right font-medium" />
+                            </div>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -64,28 +92,144 @@ export const columns: ColumnDef<Judges>[] = [
 
 export const columnsCompetitors: ColumnDef<CompetitorData>[] = [
     {
+        id: "select",
+        header: ({ table }) => (
+            <Checkbox
+                checked={
+                    table.getIsAllPageRowsSelected() ||
+                    (table.getIsSomePageRowsSelected() && "indeterminate")
+                }
+                onCheckedChange={(value) =>
+                    table.toggleAllPageRowsSelected(!!value)
+                }
+                aria-label="Select all"
+            />
+        ),
+        cell: ({ row }) => (
+            <Checkbox
+                checked={row.getIsSelected()}
+                onCheckedChange={(value) => row.toggleSelected(!!value)}
+                aria-label="Select row"
+            />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+    },
+    {
+        accessorKey: "number",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    className="pl-0"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                >
+                    Number
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
+        enableSorting: true,
+    },
+    {
         accessorKey: "name",
-        header: "Imie",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    className="pl-0"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                >
+                    Imie
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
     },
     {
         accessorKey: "last_name",
-        header: "Nazwisko",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    className="pl-0"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                >
+                    Nazwisko
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
     },
     {
         accessorKey: "sex",
-        header: "Płeć",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    className="pl-0"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                >
+                    Płeć
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
+    },
+    {
+        accessorKey: "number_of_tries",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    className="pl-0"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                >
+                    Liczba prób
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
+    },
+    {
+        accessorKey: "points",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    className="pl-0"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                >
+                    Punkty
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
     },
     {
         id: "actions",
         cell: ({ row }) => {
             const supabase = createClient();
             const competitor = row.original;
+
             const handleDeleteCompetitor = async () => {
-                const { data } = await supabase
+                const { status } = await supabase
                     .from("competitors")
                     .delete()
                     .eq("id", competitor.id);
-                console.log(data);
+                console.log(status, competitor.id);
             };
             return (
                 <DropdownMenu>
