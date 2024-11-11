@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "../AdminDashboard/data-table";
 import { Judges, columns } from "../AdminDashboard/columns";
+import DeleteBulkModal from "./delete-bulk-modal";
 
 export default function JudgesPage() {
     const supabase = createClient();
@@ -47,30 +48,6 @@ export default function JudgesPage() {
         }
         if (data) {
             setJudges(data);
-        }
-    };
-
-    const handleDeleteJudges = async () => {
-        const { error, status } = await supabase
-            .from("judges")
-            .delete()
-            .in("id", [...selectJugdes]);
-
-        if (status === 204) {
-            handleFetchJudges();
-            setSelectJudges([]);
-            toast({
-                title: `Usunięto ${selectJugdes.length} sędziów`,
-            });
-        }
-
-        if (error) {
-            console.error(error);
-            toast({
-                title: "Błąd podczas usuwania sędziów",
-                variant: "destructive",
-            });
-            return;
         }
     };
 
@@ -118,17 +95,13 @@ export default function JudgesPage() {
                     Generuj
                 </Button>
             </div>
-            <div className="container mx-auto py-10 size-full w-full">
+            <div className="container py-10 size-full w-full">
                 <div className="flex gap-10 pb-2">
-                    <div>
-                        <Button
-                            variant="destructive"
-                            disabled={selectJugdes.length === 0}
-                            onClick={() => handleDeleteJudges()}
-                        >
-                            Usuń
-                        </Button>
-                    </div>
+                    <DeleteBulkModal
+                        selectJugdes={selectJugdes}
+                        setSelectJudges={setSelectJudges}
+                        handleFetchJudges={handleFetchJudges}
+                    />
                 </div>
 
                 <DataTable

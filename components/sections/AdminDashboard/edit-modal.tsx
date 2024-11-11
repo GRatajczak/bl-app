@@ -19,6 +19,7 @@ export default function EditModal({
     competitor: CompetitorData;
 }) {
     const supabase = createClient();
+    const [open, setOpen] = useState<boolean>(false);
     const [competitorData, setCompetitorData] = useState<
         Omit<CompetitorData, "id" | "judges" | "created_at">
     >({
@@ -49,7 +50,7 @@ export default function EditModal({
         }
     };
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button>Edytuj</Button>
             </DialogTrigger>
@@ -136,6 +137,9 @@ export default function EditModal({
                 </div>
 
                 <DialogFooter>
+                    <Button variant="secondary" onClick={() => setOpen(false)}>
+                        Anuluj
+                    </Button>
                     <Button onClick={() => handleEditCompetitor()}>
                         Zapisz
                     </Button>

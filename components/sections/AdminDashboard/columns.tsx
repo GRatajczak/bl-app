@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import EditModal from "./edit-modal";
+import DeleteModal from "./delete-modal";
 
 export type Judges = {
     id: string;
@@ -236,34 +237,9 @@ export const columnsCompetitors: ColumnDef<CompetitorData>[] = [
     {
         id: "actions",
         cell: ({ row }) => {
-            const supabase = createClient();
             const competitor = row.original;
 
-            const handleDeleteCompetitor = async () => {
-                await supabase
-                    .from("competitors")
-                    .delete()
-                    .eq("id", competitor.id);
-            };
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Akcje</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                            onClick={() => handleDeleteCompetitor()}
-                        >
-                            Usuń
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            );
+            return <DeleteModal competitor={competitor} />;
         },
     },
 ];

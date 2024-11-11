@@ -28,6 +28,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import DeleteBulkModal from "./delete-bulk-modal";
 
 export default function Competitors() {
     const supabase = createClient();
@@ -37,7 +38,7 @@ export default function Competitors() {
     const [competitors, setCompetitors] = useState<CompetitorData[]>([]);
     const [select, setSelect] = useState<string[]>([]);
     const [judges, setJudges] = useState<Judges[]>([]);
-
+    const [open, setOpen] = useState<boolean>(false);
     const handleFetchJudges = async () => {
         const { data, error } = await supabase.from("judges").select("*");
         if (error) {
@@ -71,31 +72,6 @@ export default function Competitors() {
             setCompetitors(
                 data.map((e) => ({ ...e, judges: e?.judges?.name || "-" }))
             );
-        }
-    };
-
-    const handleDeleteCompetitors = async () => {
-        const { error, status } = await supabase
-            .from("competitors")
-            .delete()
-            .in("id", [...select]);
-
-        if (status === 204) {
-            setSelect([]);
-            handleFetchCompetitors();
-            setSelect([]);
-            toast({
-                title: `Usunięto ${select.length} zawodników`,
-            });
-        }
-
-        if (error) {
-            console.error(error);
-            toast({
-                title: "Błąd podczas usuwania zawodników",
-                variant: "destructive",
-            });
-            return;
         }
     };
 
@@ -136,6 +112,7 @@ export default function Competitors() {
         if (status === 204) {
             setSelect([]);
             handleFetchCompetitors();
+            setOpen(false);
             toast({
                 title: `Przypisano ${select.length} zawodników do ${
                     judges.filter((e) => e.id === judgeId)[0].name
@@ -218,22 +195,23 @@ export default function Competitors() {
                     {uploading ? "Przesyłanie..." : "Prześlij"}
                 </Button>
             </div>
-            <Dialog>
+            <Dialog open={open}>
                 <div className="container mx-auto py-10 size-full w-full">
                     <div className="flex gap-10">
                         <div className="flex gap-2 pb-2">
                             <DialogTrigger asChild>
-                                <Button disabled={select.length === 0}>
+                                <Button
+                                    onClick={() => setOpen(true)}
+                                    disabled={select.length === 0}
+                                >
                                     Przypisz
                                 </Button>
                             </DialogTrigger>
-                            <Button
-                                variant="destructive"
-                                disabled={select.length === 0}
-                                onClick={() => handleDeleteCompetitors()}
-                            >
-                                Usuń
-                            </Button>
+                            <DeleteBulkModal
+                                select={select}
+                                setSelect={setSelect}
+                                handleFetchCompetitors={handleFetchCompetitors}
+                            />
                         </div>
                     </div>
                     <DataTable
@@ -277,7 +255,10 @@ export default function Competitors() {
                     </div>
                     <DialogFooter>
                         <Button
-                            onClick={() => handleAddCompetitorToJudge(judgeId)}
+                            onClick={() => {
+                                handleAddCompetitorToJudge(judgeId);
+                                setOpen(true);
+                            }}
                         >
                             Zapisz
                         </Button>
