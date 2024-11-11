@@ -39,7 +39,7 @@ export default function DeleteBulkModal({
             table?.toggleAllPageRowsSelected(false);
             setOpen(false);
             toast({
-                title: `Usunięto ${selectJugdes.length} sędziów`,
+                title: `Usunięto ${selectJugdes.length} sędziów.`,
             });
         }
 
