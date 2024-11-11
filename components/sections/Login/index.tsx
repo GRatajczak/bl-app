@@ -25,7 +25,7 @@ export default function Login() {
             const { data, error } = await supabase
                 .from("judges")
                 .select("*")
-                .eq("name", login)
+                .eq("name", login?.toLocaleLowerCase())
                 .eq("password", password)
                 .single();
 
@@ -33,7 +33,7 @@ export default function Login() {
                 data: { user },
                 error: userError,
             } = await supabase.auth.signInWithPassword({
-                email: login,
+                email: login?.toLocaleLowerCase(),
                 password,
             });
 
