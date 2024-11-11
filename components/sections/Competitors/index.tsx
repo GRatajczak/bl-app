@@ -61,14 +61,16 @@ export default function Competitors() {
     const handleFetchCompetitors = async () => {
         const { data, error } = await supabase
             .from("competitors")
-            .select("*")
+            .select("*, judges(*)")
             .order(sortCompetitors.id, { ascending: !sortCompetitors.desc });
         if (error) {
             console.error(error);
             return;
         }
         if (data) {
-            setCompetitors(data);
+            setCompetitors(
+                data.map((e) => ({ ...e, judges: e?.judges?.name || "-" }))
+            );
         }
     };
 

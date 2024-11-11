@@ -12,6 +12,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
+import EditModal from "./edit-modal";
 
 export type Judges = {
     id: string;
@@ -26,6 +27,9 @@ export type CompetitorData = {
     sex: string;
     number_of_tries: number;
     points: number;
+    judges: {
+        name: string;
+    };
 };
 
 export const columns: ColumnDef<Judges>[] = [
@@ -216,6 +220,17 @@ export const columnsCompetitors: ColumnDef<CompetitorData>[] = [
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             );
+        },
+    },
+    {
+        accessorKey: "judges",
+        header: "Sędzia",
+    },
+    {
+        id: "edition",
+        cell: ({ row }) => {
+            const competitor = row.original;
+            return <EditModal competitor={competitor} />;
         },
     },
     {

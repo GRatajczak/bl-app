@@ -1,5 +1,4 @@
 "use client";
-
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -9,7 +8,6 @@ import {
     getCoreRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-
 import {
     Table,
     TableBody,
@@ -25,6 +23,8 @@ interface DataTableProps<TData, TValue> {
     data: TData[];
     setSort?: ({ id, desc }: { id: string; desc: boolean }) => void;
     setSelect?: (selected: string[]) => void;
+    columnVisibility?: VisibilityState;
+    hideColumns?: string[];
 }
 
 export function DataTable<TData, TValue>({
@@ -32,6 +32,7 @@ export function DataTable<TData, TValue>({
     data,
     setSort,
     setSelect,
+    hideColumns,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -76,25 +77,35 @@ export function DataTable<TData, TValue>({
         }
     }, [rowSelection]);
 
+    const removeNumberPrefix = (input: string) => {
+        return input.replace(/^\d+_/, "");
+    };
+
     return (
         <div className="rounded-md border">
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => {
-                                return (
-                                    <TableHead key={header.id}>
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                  header.column.columnDef
-                                                      .header,
-                                                  header.getContext()
-                                              )}
-                                    </TableHead>
-                                );
-                            })}
+                            {headerGroup.headers
+                                .filter((e) => {
+                                    console.log(hideColumns, e.id);
+
+                                    return !hideColumns?.includes(e.id);
+                                })
+                                .map((header) => {
+                                    return (
+                                        <TableHead key={header.id}>
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(
+                                                      header.column.columnDef
+                                                          .header,
+                                                      header.getContext()
+                                                  )}
+                                        </TableHead>
+                                    );
+                                })}
                         </TableRow>
                     ))}
                 </TableHeader>
@@ -105,14 +116,25 @@ export function DataTable<TData, TValue>({
                                 key={row.id}
                                 data-state={row.getIsSelected() && "selected"}
                             >
-                                {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id}>
-                                        {flexRender(
-                                            cell.column.columnDef.cell,
-                                            cell.getContext()
-                                        )}
-                                    </TableCell>
-                                ))}
+                                {row
+                                    .getVisibleCells()
+                                    .filter((e) => {
+                                        return !hideColumns?.includes(
+                                            removeNumberPrefix(e.id)
+                                        );
+                                    })
+                                    .map((cell) => {
+                                        console.log(cell);
+
+                                        return (
+                                            <TableCell key={cell.id}>
+                                                {flexRender(
+                                                    cell.column.columnDef.cell,
+                                                    cell.getContext()
+                                                )}
+                                            </TableCell>
+                                        );
+                                    })}
                             </TableRow>
                         ))
                     ) : (
