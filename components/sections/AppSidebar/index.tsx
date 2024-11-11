@@ -70,10 +70,10 @@ export function AppSidebar() {
 
     return (
         <Sidebar>
-            <SidebarContent>
+            <SidebarContent className="bg-white">
                 <SidebarGroup>
                     <SidebarGroupLabel className="h-100 ">
-                        <div className="bg-white size-full flex items-center justify-center flex-col gap-2 py-5">
+                        <div className="bg-white size-full flex justify-center flex-col gap-2 py-5">
                             <Image
                                 className=""
                                 src="/logo.jpg"
