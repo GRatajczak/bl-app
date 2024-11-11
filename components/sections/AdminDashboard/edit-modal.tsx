@@ -5,6 +5,7 @@ import {
     Dialog,
     DialogContent,
     DialogFooter,
+    DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -66,6 +67,9 @@ export default function EditModal({
             </DialogTrigger>
 
             <DialogContent className="sm:max-w-[425px]">
+                <DialogTitle>
+                    Edycja {competitor.name} {competitor.last_name}
+                </DialogTitle>
                 <div className="">
                     {type !== "judge" && (
                         <>
