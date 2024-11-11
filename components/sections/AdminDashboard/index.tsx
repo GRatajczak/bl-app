@@ -7,5 +7,5 @@ export default function AdminDashboard() {
 
     const supabase = createClient();
 
-    return <div className="flex flex-col full-size w-full">d</div>;
+    return <div className="flex flex-col full-size w-full"></div>;
 }
