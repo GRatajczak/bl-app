@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { CompetitorData } from "./columns";
 import { Button } from "@/components/ui/button";
 import Cookies from "js-cookie";
+import { useToast } from "@/hooks/use-toast";
 
 export default function EditModal({
     competitor,
@@ -32,9 +33,10 @@ export default function EditModal({
     });
 
     const type = Cookies.get("supabase.auth.token")?.split("type: ")[1];
+    const { toast } = useToast();
 
     const handleEditCompetitor = async () => {
-        const { error } = await supabase
+        const { error, status } = await supabase
             .from("competitors")
             .update({
                 name: competitorData.name,
@@ -44,9 +46,17 @@ export default function EditModal({
                 points: competitorData.points,
             })
             .eq("id", competitor.id);
-
+        if (status === 204) {
+            setOpen(false);
+            toast({
+                title: "Pomyślnie edytowano dane",
+            });
+        }
         if (error) {
-            return;
+            toast({
+                title: "Wystąpił błąd",
+                variant: "destructive",
+            });
         }
     };
     return (
