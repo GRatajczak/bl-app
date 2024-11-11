@@ -254,7 +254,6 @@ export default function Competitors() {
                             </Label>
                             <Select
                                 onValueChange={(e) => {
-                                    console.log(e);
                                     setJudgeId(e);
                                 }}
                             >

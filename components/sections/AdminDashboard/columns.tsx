@@ -240,11 +240,10 @@ export const columnsCompetitors: ColumnDef<CompetitorData>[] = [
             const competitor = row.original;
 
             const handleDeleteCompetitor = async () => {
-                const { status } = await supabase
+                await supabase
                     .from("competitors")
                     .delete()
                     .eq("id", competitor.id);
-                console.log(status, competitor.id);
             };
             return (
                 <DropdownMenu>

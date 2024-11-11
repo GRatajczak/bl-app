@@ -89,8 +89,6 @@ export function DataTable<TData, TValue>({
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers
                                 .filter((e) => {
-                                    console.log(hideColumns, e.id);
-
                                     return !hideColumns?.includes(e.id);
                                 })
                                 .map((header) => {
@@ -124,8 +122,6 @@ export function DataTable<TData, TValue>({
                                         );
                                     })
                                     .map((cell) => {
-                                        console.log(cell);
-
                                         return (
                                             <TableCell key={cell.id}>
                                                 {flexRender(
