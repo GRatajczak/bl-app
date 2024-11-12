@@ -14,6 +14,7 @@ import { CompetitorData } from "./columns";
 import { Button } from "@/components/ui/button";
 import Cookies from "js-cookie";
 import { useToast } from "@/hooks/use-toast";
+import { useParams } from "next/navigation";
 
 export default function EditModal({
     competitor,
@@ -22,20 +23,51 @@ export default function EditModal({
 }) {
     const supabase = createClient();
     const [open, setOpen] = useState<boolean>(false);
+    const { id } = useParams();
+    console.log(id);
+
     const [competitorData, setCompetitorData] = useState<
         Omit<CompetitorData, "id" | "judges" | "created_at">
     >({
-        name: competitor.name,
-        last_name: competitor.last_name,
-        number: competitor.number,
-        number_of_tries: competitor.number_of_tries,
-        points: competitor.points,
-        sex: competitor.sex,
-        flash: competitor.flash,
-        top: competitor.top,
-        bonus: competitor.bonus,
-        spalona: competitor.spalona,
+        name: "",
+        last_name: "",
+        number: 0,
+        number_of_tries: 0,
+        points: 0,
+        sex: "",
+        flash: 0,
+        top: 0,
+        bonus: 0,
+        spalona: 0,
     });
+
+    const handleGetCompetitorData = async () => {
+        const { data, error } = await supabase
+            .from("competitors")
+            .select("*")
+            .eq("id", competitor.id)
+            .select();
+        if (error) {
+            console.error(error);
+            return;
+        }
+        if (data) {
+            setCompetitorData(data[0]);
+        }
+    };
+
+    useEffect(() => {
+        handleGetCompetitorData();
+    }, []);
+
+    useEffect(() => {
+        if (open) handleGetCompetitorData();
+    }, [open]);
+
+    const flash = !!localStorage.getItem(`flash-${competitor.id}-${id}`);
+    const top = !!localStorage.getItem(`top-${competitor.id}-${id}`);
+    const bonus = !!localStorage.getItem(`bonus-${competitor.id}-${id}`);
+    const spalona = !!localStorage.getItem(`spalona-${competitor.id}-${id}`);
 
     const type = Cookies.get("supabase.auth.token")?.split("type: ")[1];
     const { toast } = useToast();
@@ -97,6 +129,7 @@ export default function EditModal({
             .eq("id", competitor.id);
         if (status === 204) {
             setOpen(false);
+            localStorage.setItem(`flash-${competitor.id}-${id}`, "true");
             toast({
                 title: "Pomyślnie dodano Flash",
             });
@@ -120,6 +153,7 @@ export default function EditModal({
             .eq("id", competitor.id);
         if (status === 204) {
             setOpen(false);
+            localStorage.setItem(`top-${competitor.id}-${id}`, "true");
             toast({
                 title: "Pomyślnie dodano Flash",
             });
@@ -143,6 +177,7 @@ export default function EditModal({
             .eq("id", competitor.id);
         if (status === 204) {
             setOpen(false);
+            localStorage.setItem(`bonus-${competitor.id}-${id}`, "true");
             toast({
                 title: "Pomyślnie dodano Flash",
             });
@@ -165,6 +200,7 @@ export default function EditModal({
             .eq("id", competitor.id);
         if (status === 204) {
             setOpen(false);
+            localStorage.setItem(`spalona-${competitor.id}-${id}`, "true");
             toast({
                 title: "Pomyślnie dodano Flash",
             });
@@ -315,32 +351,43 @@ export default function EditModal({
 
                     {type === "judge" && (
                         <div className="flex flex-col gap-5">
-                            {competitor.flash !== judges && (
-                                <Button
-                                    className="bg-green-500 hover:bg-green-600"
-                                    onClick={() => handleFlash()}
-                                >
-                                    Flash
-                                </Button>
+                            {flash && (
+                                <p className="text-green-500 font-bold text-xl">
+                                    Zawodnik zrobił flash!
+                                </p>
                             )}
-                            <Button
-                                className="bg-blue-500 hover:bg-blue-600"
-                                onClick={() => handleTop()}
-                            >
-                                Top
-                            </Button>
-                            <Button
-                                className="bg-orange-500 hover:bg-orange-600"
-                                onClick={() => handleBonus()}
-                            >
-                                Bonus
-                            </Button>
-                            <Button
-                                className="bg-red-500 hover:bg-red-600"
-                                onClick={() => handleSpalona()}
-                            >
-                                Spalony
-                            </Button>
+                            {competitor.flash !== judges &&
+                                !flash &&
+                                !(top || bonus || spalona) && (
+                                    <Button
+                                        className="bg-green-500 hover:bg-green-600"
+                                        onClick={() => handleFlash()}
+                                    >
+                                        Flash
+                                    </Button>
+                                )}
+                            {!flash && (
+                                <>
+                                    <Button
+                                        className="bg-blue-500 hover:bg-blue-600"
+                                        onClick={() => handleTop()}
+                                    >
+                                        Top
+                                    </Button>
+                                    <Button
+                                        className="bg-orange-500 hover:bg-orange-600"
+                                        onClick={() => handleBonus()}
+                                    >
+                                        Bonus
+                                    </Button>
+                                    <Button
+                                        className="bg-red-500 hover:bg-red-600"
+                                        onClick={() => handleSpalona()}
+                                    >
+                                        Spalony
+                                    </Button>
+                                </>
+                            )}
                         </div>
                     )}
                 </div>

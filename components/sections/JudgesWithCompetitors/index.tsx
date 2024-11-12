@@ -8,7 +8,6 @@ import { DataTable } from "../AdminDashboard/data-table";
 export default function JudgesWithCompetitors({
     hideColumns,
 }: {
-    id?: string;
     hideColumns?: string[];
     judgeView?: boolean;
 }) {

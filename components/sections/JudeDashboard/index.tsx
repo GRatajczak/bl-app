@@ -1,9 +1,8 @@
 import JudgesWithCompetitors from "../JudgesWithCompetitors";
 
-export default async function JudgeDashboard({ id }: { id: string }) {
+export default async function JudgeDashboard() {
     return (
         <JudgesWithCompetitors
-            id={id}
             hideColumns={[
                 "judges",
                 "select",
