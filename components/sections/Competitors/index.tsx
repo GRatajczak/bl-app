@@ -41,6 +41,7 @@ export default function Competitors() {
     const [judges, setJudges] = useState<Judges[]>([]);
     const [open, setOpen] = useState<boolean>(false);
     const [table, setTable] = useState<any>();
+
     const handleFetchJudges = async () => {
         const { data, error } = await supabase.from("judges").select("*");
         if (error) {
@@ -56,10 +57,37 @@ export default function Competitors() {
         id: string;
         desc: boolean;
     }>({
-        id: "created_at",
-        desc: true,
+        id: "number",
+        desc: false,
     });
     const { toast } = useToast();
+
+    const handleDownloadCSV = () => {
+        const csv = Papa.unparse(
+            competitors.map((e) => ({
+                imie: e.name,
+                nazwisko: e.last_name,
+                plec: e.sex,
+                liczba_prob: e.number_of_tries,
+                punkty: e.points,
+                flash: e.flash,
+                top: e.top,
+                bonus: e.bonus,
+                spalona: e.spalona,
+            }))
+        );
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "zawodnicy.csv";
+        a.click();
+        URL.revokeObjectURL(url);
+
+        toast({
+            title: "Pobrano plik CSV",
+        });
+    };
 
     const handleFetchCompetitors = async () => {
         const { data, error } = await supabase
@@ -183,7 +211,6 @@ export default function Competitors() {
     return (
         <div>
             <h3 className="text-2xl font-bold pb-5">Zawodnicy</h3>
-
             <div className="grid w-full max-w-sm items-center gap-1.5">
                 <Label htmlFor="picture">CSV z zawodnikami</Label>
                 <Input
@@ -202,13 +229,17 @@ export default function Competitors() {
                     <div className="flex gap-10">
                         <div className="flex gap-2 pb-2">
                             <DialogTrigger asChild>
-                                <Button
-                                    onClick={() => setOpen(true)}
-                                    disabled={select.length === 0}
-                                >
+                                <Button onClick={() => setOpen(true)} disabled>
                                     Przypisz
                                 </Button>
                             </DialogTrigger>
+                            <Button
+                                onClick={() => handleDownloadCSV()}
+                                className="bg-green-500 hover:bg-green-600"
+                            >
+                                Pobierz do CSV
+                            </Button>
+
                             <DeleteBulkModal
                                 select={select}
                                 setSelect={setSelect}

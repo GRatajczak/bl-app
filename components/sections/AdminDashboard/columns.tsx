@@ -31,6 +31,10 @@ export type CompetitorData = {
     judges: {
         name: string;
     };
+    flash: number;
+    top: number;
+    bonus: number;
+    spalona: number;
 };
 
 export const columns: ColumnDef<Judges>[] = [
@@ -224,8 +228,72 @@ export const columnsCompetitors: ColumnDef<CompetitorData>[] = [
         },
     },
     {
-        accessorKey: "judges",
-        header: "Sędzia",
+        accessorKey: "flash",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    className="pl-0"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                >
+                    Flash
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
+    },
+    {
+        accessorKey: "top",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    className="pl-0"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                >
+                    Top
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
+    },
+    {
+        accessorKey: "bonus",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    className="pl-0"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                >
+                    Bonus
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
+    },
+    {
+        accessorKey: "spalona",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    className="pl-0"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                >
+                    Spalona
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
     },
     {
         id: "edition",

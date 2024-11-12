@@ -1,6 +1,5 @@
 "use client";
 import { createClient } from "@/lib/supabase";
-// import { useToast } from "@/hooks/use-toast";
 import { Judges } from "./columns";
 import { useEffect, useState } from "react";
 import JudgesWithCompetitors from "../JudgesWithCompetitors";
@@ -8,8 +7,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function AdminDashboard() {
-    // const { toast } = useToast();
-
     const [judges, setJudges] = useState<Judges[]>([]);
     const supabase = createClient();
 
@@ -50,14 +47,7 @@ export default function AdminDashboard() {
     return (
         <div className="flex flex-col full-size w-full">
             {judges.length ? (
-                judges.map((judge) => (
-                    <div key={judge.id}>
-                        <h3 className="text-2xl font-bold pb-5">
-                            {judge.name}
-                        </h3>
-                        <JudgesWithCompetitors id={judge.id} />
-                    </div>
-                ))
+                <JudgesWithCompetitors hideColumns={["select"]} />
             ) : (
                 <div>
                     <h3 className="text-2xl font-bold pb-5">Brak sędziów</h3>

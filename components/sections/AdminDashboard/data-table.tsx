@@ -43,7 +43,6 @@ export function DataTable<TData, TValue>({
         {}
     );
     const [rowSelection, setRowSelection] = useState({});
-    console.log(rowSelection);
 
     const table = useReactTable({
         data,

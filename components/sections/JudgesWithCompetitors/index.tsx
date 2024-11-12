@@ -6,32 +6,36 @@ import { CompetitorData, columnsCompetitors } from "../AdminDashboard/columns";
 import { DataTable } from "../AdminDashboard/data-table";
 
 export default function JudgesWithCompetitors({
-    id,
     hideColumns,
 }: {
-    id: string;
+    id?: string;
     hideColumns?: string[];
     judgeView?: boolean;
 }) {
     const supabase = createClient();
     const [competitors, setCompetitors] = useState<CompetitorData[]>([]);
+    const [sort, setSort] = useState<{ id: string; desc: boolean }>({
+        id: "number",
+        desc: false,
+    });
 
     const handleFetchCompetitors = async () => {
         const { data, error } = await supabase
             .from("competitors")
-            .select("*, judges(name)")
-            .eq("judge_id", id)
-            .order("number", { ascending: true });
+            .select("*")
+            .order(sort.id, { ascending: !sort.desc });
         if (error) {
             console.error(error);
             return;
         }
         if (data) {
-            setCompetitors(
-                data.map((e) => ({ ...e, judges: e?.judges?.name || "-" }))
-            );
+            setCompetitors(data);
         }
     };
+
+    useEffect(() => {
+        handleFetchCompetitors();
+    }, [sort]);
 
     useEffect(() => {
         handleFetchCompetitors();
@@ -60,6 +64,7 @@ export default function JudgesWithCompetitors({
             <DataTable
                 columns={columnsCompetitors}
                 data={competitors}
+                setSort={setSort}
                 hideColumns={hideColumns}
             />
         </div>
