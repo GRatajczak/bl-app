@@ -102,6 +102,10 @@ export default function EditModal({
                 number: competitorData.number,
                 number_of_tries: competitorData.number_of_tries,
                 points: competitorData.points,
+                flash: competitorData.flash,
+                top: competitorData.top,
+                bonus: competitorData.bonus,
+                spalona: competitorData.spalona,
             })
             .eq("id", competitor.id);
         if (status === 204) {
